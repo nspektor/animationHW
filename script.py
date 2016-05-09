@@ -54,6 +54,7 @@ from display import *
 from matrix import *
 from draw import *
 
+basename = "default_img"
 
 """======== first_pass( commands, symbols ) ==========
 
@@ -73,6 +74,21 @@ from draw import *
   jdyrlandweaver
   ==================== """
 def first_pass( commands ):
+    if "basename" in commands:
+        basename = commands[ commands.index("basename") ][0]
+    else:
+        print "Using default basename: " + basename
+    if "vary" in commands:
+        if commands.count("frame") != 1:
+            #error!!
+            print "you suck"
+            exit()
+        else:
+            num_frames = commands[ commands.index("frames")][0]
+            second_pass(commands, num_frames)
+    else:
+        second_pass(commands, 1) #if no vary, just one frame img?
+        
         
 
 """======== second_pass( commands ) ==========
