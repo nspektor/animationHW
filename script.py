@@ -109,7 +109,20 @@ def first_pass( commands ):
   appropirate value. 
   ===================="""
 def second_pass( commands, num_frames ):
-
+    knobs = []
+    for n in xrange(num_frames):
+        knobs.append({})
+    
+    for c in commands:
+        if c[0] == "vary":
+            for f in xrange(num_frames):
+                if f>c[3]:
+                    knobs[f][c[1]]=c[5]
+                elif f<c[2]:
+                    knobs[f][c[1]] = c[4]
+                else:
+                    knobs[f][c[1]]=(c[5]-c[4])*(f-c[2])/float((c[3]-c[2]))+c[4]
+    return knobs
 
 def run(filename):
     """
