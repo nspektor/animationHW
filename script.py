@@ -164,7 +164,8 @@ def run(filename):
     
             if command[0] == "sphere":
                 m = []
-                add_sphere(m, command[1], command[2], command[3], command[4], 5)
+                args = [command[x] if command[x] not in knobs[f] else knobs[f][x] for x in range(5)+1 ]
+                add_sphere(m, args[1], args[2], args[3], args[4], 5)
                 matrix_mult(stack[-1], m)
                 draw_polygons( m, screen, color )
 
@@ -177,31 +178,36 @@ def run(filename):
             
             if command[0] == "box":                
                 m = []
-                add_box(m, *command[1:])
+                args = [command[x] if command[x] not in knobs[f] else knobs[f][x] for x in range(len(command))+1 ]
+                add_box(m, *args[1:])
                 matrix_mult(stack[-1], m)
                 draw_polygons( m, screen, color )
     
             if command[0] == "line":
                 m = []
-                add_edge(m, *command[1:])
+                args = [command[x] if command[x] not in knobs[f] else knobs[f][x] for x in range(len(command))+1 ]
+                add_edge(m, *args[1:])
                 matrix_mult(stack[-1], m)
                 draw_lines( m, screen, color )
 
             if command[0] == "bezier":
                 m = []
-                add_curve(m, command[1], command[2], command[3], command[4], command[5], command[6], command[7], command[8], .05, 'bezier')
+                args = [command[x] if command[x] not in knobs[f] else knobs[f][x] for x in range(8)+1 ]
+                add_curve(m, args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], .05, 'bezier')
                 matrix_mult(stack[-1], m)
                 draw_lines( m, screen, color )
     
             if command[0] == "hermite":
                 m = []
-                add_curve(m, command[1], command[2], command[3], command[4], command[5], command[6], command[7], command[8], .05, 'hermite')
+                args = [command[x] if command[x] not in knobs[f] else knobs[f][x] for x in range(8)+1 ]
+                add_curve(m, args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], .05, 'hermite')
                 matrix_mult(stack[-1], m)
                 draw_lines( m, screen, color )
     
             if command[0] == "circle":
                 m = []
-                add_circle(m, command[1], command[2], command[3], command[4], .05)
+                args = [command[x] if command[x] not in knobs[f] else knobs[f][x] for x in range(4)+1 ]
+                add_circle(m, args[1], args[2], args[3], args[4], .05)
                 matrix_mult(stack[-1], m)
                 draw_lines( m, screen, color )
 
