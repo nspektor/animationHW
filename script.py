@@ -54,7 +54,7 @@ from display import *
 from matrix import *
 from draw import *
 
-basename = "default_img"
+
 
 """======== first_pass( commands, symbols ) ==========
 
@@ -73,7 +73,9 @@ basename = "default_img"
 
   jdyrlandweaver
   ==================== """
+basename = "default_img"
 def first_pass( commands ):
+    global basename
     if "basename" in commands:
         basename = commands[ commands.index("basename") ][0]
     else:
@@ -85,9 +87,9 @@ def first_pass( commands ):
             exit()
         else:
             num_frames = commands[ commands.index("frames")][0]
-            second_pass(commands, num_frames)
+            return second_pass(commands, num_frames)
     else:
-        second_pass(commands, 1) #if no vary, just one frame img?
+       return second_pass(commands, 1) #if no vary, just one frame img?
         
         
 
@@ -122,6 +124,7 @@ def second_pass( commands, num_frames ):
                     knobs[f][c[1]] = c[4]
                 else:
                     knobs[f][c[1]]=(c[5]-c[4])*(f-c[2])/float((c[3]-c[2]))+c[4]
+    print knobs
     return knobs
 
 def run(filename):
@@ -145,7 +148,7 @@ def run(filename):
     screen = new_screen()    
 
     knobs = first_pass(commands) #which calls second pass
-    frame = 0
+    f = 0
     while ( f <= len(knobs) ):
         for command in commands:
             if command[0] == "pop":
@@ -241,7 +244,7 @@ def run(filename):
                     
                 matrix_mult( stack[-1], t )
                 stack[-1] = t
-            save_extension(screen, basename+"0"+str(frame)+".png")
+            save_extension(screen, basename+"0"+str(f)+".png")
             clear_screen(screen)
             f += 1 #onto the next frame
             
