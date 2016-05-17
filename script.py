@@ -170,7 +170,8 @@ def run(filename):
 
             if command[0] == "torus":
                 m = []
-                add_torus(m, command[1], command[2], command[3], command[4], command[5], 5)
+                args = [command[x] if command[x] not in knobs[f] else knobs[f][x] for x in range(5)+1 ]
+                add_torus(m, args[1], args[2], args[3], args[4], args[5], 5)
                 matrix_mult(stack[-1], m)
                 draw_polygons( m, screen, color )
             
