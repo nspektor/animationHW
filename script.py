@@ -4,7 +4,7 @@
   to get a working mdl project (for now).
 
   my_main.c will serve as the interpreter for mdl.
-  When an mdl script goes through a lexer and parser, 
+  When an mdl script goes through a lexer and parser,
   the resulting operations will be in the array op[].
 
   Your job is to go through each entry in op and perform
@@ -18,32 +18,32 @@
         over a specified interval
 
   set: set a knob to a given value
-  
+
   setknobs: set all knobs to a given value
 
   push: push a new origin matrix onto the origin stack
-  
+
   pop: remove the top matrix on the origin stack
 
-  move/scale/rotate: create a transformation matrix 
-                     based on the provided values, then 
+  move/scale/rotate: create a transformation matrix
+                     based on the provided values, then
 		     multiply the current top of the
 		     origins stack by it.
 
   box/sphere/torus: create a solid object based on the
-                    provided values. Store that in a 
+                    provided values. Store that in a
 		    temporary matrix, multiply it by the
 		    current top of the origins stack, then
 		    call draw_polygons.
 
-  line: create a line based on the provided values. Store 
+  line: create a line based on the provided values. Store
         that in a temporary matrix, multiply it by the
 	current top of the origins stack, then call draw_lines.
 
   save: call save_extension with the provided filename
 
   display: view the image live
-  
+
   jdyrlandweaver
   ========================="""
 
@@ -60,8 +60,8 @@ from draw import *
 
   Checks the commands array for any animation commands
   (frames, basename, vary)
-  
-  Should set num_frames and basename if the frames 
+
+  Should set num_frames and basename if the frames
   or basename commands are present
 
   If vary is found, but frames is not, the entire
@@ -90,8 +90,8 @@ def first_pass( commands ):
             return second_pass(commands, num_frames)
     else:
        return second_pass(commands, 1) #if no vary, just one frame img?
-        
-        
+
+
 
 """======== second_pass( commands ) ==========
 
@@ -105,25 +105,32 @@ def first_pass( commands ):
   key will be a knob name, and each value will be the knob's
   value for that frame.
 
-  Go through the command array, and when you find vary, go 
+  Go through the command array, and when you find vary, go
   from knobs[0] to knobs[frames-1] and add (or modify) the
   dictionary corresponding to the given knob with the
-  appropirate value. 
+  appropirate value.
   ===================="""
 def second_pass( commands, num_frames ):
     knobs = []
     for n in xrange(num_frames):
         knobs.append({})
-    
+
     for c in commands:
         if c[0] == "vary":
-            for f in xrange(num_frames):
-                if f>c[3]:
-                    knobs[f][c[1]]=c[5]
-                elif f<c[2]:
-                    knobs[f][c[1]] = c[4]
+            for n in range(num_frames):
+                f_start=c[2]
+                f_end=c[3]
+                val_start=c[4]
+                val_end=c[5]
+                knob_name=c[1]
+                knob_val=1
+                if n<f_start:
+                    knobs[n][knob_name]=val_start
+                elif n>f_end: #animation already ended
+                    knobs[n][knob_name]=val_end
                 else:
-                    knobs[f][c[1]]=(c[5]-c[4])*(f-c[2])/float((c[3]-c[2]))+c[4]
+                    knob_val = val_start + ( (val_end - val_start)*(n - f_start) / float((f_end - f_start)))
+                    knobs[n][knob_name]=knob_val
     print knobs
     return knobs
 
@@ -143,10 +150,8 @@ def run(filename):
     else:
         print "Parsing failed."
         return
-        
     stack = [ tmp ]
-    screen = new_screen()    
-
+    screen = new_screen()
     knobs = first_pass(commands) #which calls second pass
     f = 0
     while ( f <= len(knobs) ):
@@ -155,16 +160,12 @@ def run(filename):
                 stack.pop()
                 if not stack:
                     stack = [ tmp ]
-    
             if command[0] == "push":
                 stack.append( stack[-1][:] )
-    
             if command[0] == "save":
                 save_extension(screen, command[1])
-    
             if command[0] == "display":
                 display(screen)
-    
             if command[0] == "sphere":
                 m = []
                 args = [command[x] if command[x] not in knobs[f] else knobs[f][x] for x in range(5)+1 ]
@@ -178,14 +179,14 @@ def run(filename):
                 add_torus(m, args[1], args[2], args[3], args[4], args[5], 5)
                 matrix_mult(stack[-1], m)
                 draw_polygons( m, screen, color )
-            
-            if command[0] == "box":                
+
+            if command[0] == "box":
                 m = []
                 args = [command[x] if command[x] not in knobs[f] else knobs[f][x] for x in range(len(command))+1 ]
                 add_box(m, *args[1:])
                 matrix_mult(stack[-1], m)
                 draw_polygons( m, screen, color )
-    
+
             if command[0] == "line":
                 m = []
                 args = [command[x] if command[x] not in knobs[f] else knobs[f][x] for x in range(len(command))+1 ]
@@ -199,14 +200,14 @@ def run(filename):
                 add_curve(m, args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], .05, 'bezier')
                 matrix_mult(stack[-1], m)
                 draw_lines( m, screen, color )
-    
+
             if command[0] == "hermite":
                 m = []
                 args = [command[x] if command[x] not in knobs[f] else knobs[f][x] for x in range(8)+1 ]
                 add_curve(m, args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], .05, 'hermite')
                 matrix_mult(stack[-1], m)
                 draw_lines( m, screen, color )
-    
+
             if command[0] == "circle":
                 m = []
                 args = [command[x] if command[x] not in knobs[f] else knobs[f][x] for x in range(4)+1 ]
@@ -214,7 +215,7 @@ def run(filename):
                 matrix_mult(stack[-1], m)
                 draw_lines( m, screen, color )
 
-            if command[0] == "move":                
+            if command[0] == "move":
                 xval = command[1]
                 yval = command[2]
                 zval = command[3]
@@ -227,24 +228,23 @@ def run(filename):
                 xval = command[1]
                 yval = command[2]
                 zval = command[3]
-    
+
                 t = make_scale(xval, yval, zval)
                 matrix_mult( stack[-1], t )
                 stack[-1] = t
-            
+
             if command[0] == "rotate":
                 angle = command[2] * (math.pi / 180)
-        
+
                 if command[1] == 'x':
                     t = make_rotX( angle )
                 elif command[1] == 'y':
                     t = make_rotY( angle )
                 elif command[1] == 'z':
-                    t = make_rotZ( angle )            
-                    
+                    t = make_rotZ( angle )
+
                 matrix_mult( stack[-1], t )
                 stack[-1] = t
             save_extension(screen, basename+"0"+str(f)+".png")
             clear_screen(screen)
             f += 1 #onto the next frame
-            
