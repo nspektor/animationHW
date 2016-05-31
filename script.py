@@ -80,16 +80,15 @@ def first_pass( commands ):
         basename = commands[ commands.index("basename") ][0]
     else:
         print "Using default basename: " + basename
-    if "vary" in commands:
-        if commands.count("frame") != 1:
-            #error!!
-            print "you suck"
-            exit()
-        else:
-            num_frames = commands[ commands.index("frames")][0]
-            return second_pass(commands, num_frames)
-    else:
-       return second_pass(commands, 1) #if no vary, just one frame img?
+    for command in commands:
+        print command
+        if command[0] == "frames":
+            print "print num_frames"
+            print commands[1]
+            return second_pass(commands, command[1])
+    #else:
+      # print "only one frame"
+      # return second_pass(commands, 1) #if no vary, just one frame img?
 
 
 
@@ -110,7 +109,7 @@ def first_pass( commands ):
   dictionary corresponding to the given knob with the
   appropirate value.
   ===================="""
-def second_pass( commands, num_frames ):
+"""def second_pass( commands, num_frames ):
     knobs = []
     for n in xrange(num_frames):
         knobs.append({})
@@ -133,7 +132,31 @@ def second_pass( commands, num_frames ):
                     knobs[n][knob_name]=knob_val
     print knobs
     return knobs
-
+"""
+def second_pass( commands, num ):
+        print num
+        knobs = []
+        for i in range(num):
+            if i >= len(knobs):
+                knobs.append({})
+            else:
+                knobs[i] = {}
+        for command in commands:
+            if command[0] == "vary":
+                knob = command[1]
+                fo = int(command[2])
+                fi = int(command[3])
+                vo = int(command[4])
+                vi = int(command[5])
+                for i in range( fo, fi+1 ):
+                    val = vo + 1.0 * (i-fo) * (vi-vo) / (fi-fo)
+                    print fo
+                    print fi
+                    print knobs
+                    print i
+                    print knob
+                    knobs[i][knob] = val
+        return knobs
 def run(filename):
     """
     This function runs an mdl script
@@ -153,6 +176,8 @@ def run(filename):
     stack = [ tmp ]
     screen = new_screen()
     knobs = first_pass(commands) #which calls second pass
+    print "printing knobs: "
+    print knobs
     f = 0
     while ( f <= len(knobs) ):
         for command in commands:
