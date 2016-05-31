@@ -109,7 +109,7 @@ def first_pass( commands ):
   dictionary corresponding to the given knob with the
   appropirate value.
   ===================="""
-"""def second_pass( commands, num_frames ):
+def second_pass( commands, num_frames ):
     knobs = []
     for n in xrange(num_frames):
         knobs.append({})
@@ -132,31 +132,6 @@ def first_pass( commands ):
                     knobs[n][knob_name]=knob_val
     print knobs
     return knobs
-"""
-def second_pass( commands, num ):
-        print num
-        knobs = []
-        for i in range(num):
-            if i >= len(knobs):
-                knobs.append({})
-            else:
-                knobs[i] = {}
-        for command in commands:
-            if command[0] == "vary":
-                knob = command[1]
-                fo = int(command[2])
-                fi = int(command[3])
-                vo = int(command[4])
-                vi = int(command[5])
-                for i in range( fo, fi+1 ):
-                    val = vo + 1.0 * (i-fo) * (vi-vo) / (fi-fo)
-                    print fo
-                    print fi
-                    print knobs
-                    print i
-                    print knob
-                    knobs[i][knob] = val
-        return knobs
 def run(filename):
     """
     This function runs an mdl script
